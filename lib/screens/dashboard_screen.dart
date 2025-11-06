@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:se/models/account.dart';
-import 'package:se/screens/account_detail_screen.dart';
+import 'package:se/models/transaction.dart' as tx_model;
 import 'package:se/services/database_helper.dart';
 import 'package:se/theme.dart';
-import 'package:se/widgets/account_card.dart';
+import 'package:se/widgets/transaction_list_item.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+  // We must pass the key from the parent
+  const DashboardScreen({Key? key}) : super(key: key);
 
   @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
+  // 1. RENAME THIS from _DashboardScreenState to DashboardScreenState
+  State<DashboardScreen> createState() => DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+// 2. RENAME THE CLASS to be public
+class DashboardScreenState extends State<DashboardScreen> {
   late Future<Map<String, dynamic>> _dashboardData;
   final dbHelper = DatabaseHelper.instance;
   final formatter = NumberFormat("#,##0.00", "en_US");
@@ -25,12 +28,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<Map<String, dynamic>> _loadData() async {
-    final accounts = await dbHelper.getAccountsWithBalance();
     final totalBalance = await dbHelper.getOverallBalance();
+    final monthlyTransactions = await dbHelper.getMonthlyTransactions(); 
+    
     return {
-      'accounts': accounts,
       'totalBalance': totalBalance,
+      'transactions': monthlyTransactions,
     };
+  }
+  
+  // 3. ADD THIS PUBLIC METHOD
+  // This is the "remote control" function
+  void refreshData() {
+    setState(() {
+      _dashboardData = _loadData();
+    });
   }
 
   @override
@@ -50,8 +62,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           return const Center(child: Text("No data found."));
         }
 
-        final List<Account> accounts = snapshot.data!['accounts'];
         final double totalBalance = snapshot.data!['totalBalance'];
+        final List<tx_model.Transaction> transactions = 
+            List<tx_model.Transaction>.from(snapshot.data!['transactions'] ?? []);
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -59,45 +72,67 @@ class _DashboardScreenState extends State<DashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildTotalBalanceCard(context, totalBalance),
-              
               const SizedBox(height: 24),
-              
               Text(
-                "Your Accounts",
+                "This Month's Transactions",
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 12),
-              
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: accounts.length,
-                itemBuilder: (context, index) {
-                  final account = accounts[index];
-                  return AccountCard(
-                    accountName: account.name,
-                    balance: formatter.format(account.balance),
-                    change: "", 
-                    changeColor: account.balance >= 0 
-                                  ? AppTheme.primaryGreen 
-                                  : AppTheme.primaryRed,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => AccountDetailScreen(
-                            account: account, 
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
+              _buildTransactionList(transactions),
             ],
           ),
         );
       },
     );
+  }
+
+  Widget _buildTransactionList(List<tx_model.Transaction> transactions) {
+    if (transactions.isEmpty) {
+      return const Card(
+        child: Padding(
+          padding: EdgeInsets.all(24.0),
+          child: Center(
+            child: Text(
+              "No transactions for this month yet.",
+              style: TextStyle(color: AppTheme.lightText, fontSize: 16),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: transactions.length,
+      itemBuilder: (context, index) {
+        final tx = transactions[index];
+        final isExpense = tx.type == 'expense';
+        
+        return TransactionListItem(
+          title: tx.notes.isEmpty ? tx.category : tx.notes,
+          category: DateFormat.yMd().format(tx.date),
+          amount: tx.amount,
+          isExpense: isExpense,
+          icon: _getIconForCategory(tx.category),
+        );
+      },
+    );
+  }
+
+  IconData _getIconForCategory(String category) {
+    switch (category) {
+      case 'Food': return Icons.fastfood_outlined;
+      case 'Transport': return Icons.directions_bus_outlined;
+      case 'Rent': return Icons.home_outlined;
+      case 'Bills': return Icons.receipt_long_outlined;
+      case 'Shopping': return Icons.shopping_bag_outlined;
+      case 'Entertainment': return Icons.movie_outlined;
+      case 'Savings': return Icons.savings_outlined;
+      case 'Salary': return Icons.work_outline;
+      case 'Gifts': return Icons.card_giftcard_outlined;
+      default: return Icons.category_outlined;
+    }
   }
 
   Widget _buildTotalBalanceCard(BuildContext context, double balance) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:se/screens/add_transaction_screen.dart';
 import 'package:se/screens/budget_screen.dart';
-import 'package:se/screens/dashboard_screen.dart';
+import 'package:se/screens/dashboard_screen.dart'; 
 import 'package:se/screens/reports_screen.dart';
 import 'package:se/screens/settings_screen.dart';
 
@@ -15,13 +15,9 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _selectedIndex = 0;
 
-  // REMOVED 'static const' to allow refreshing
-  List<Widget> _widgetOptions = <Widget>[
-    const DashboardScreen(),
-    const ReportsScreen(),
-    const BudgetScreen(),
-    const SettingsScreen(),
-  ];
+  final GlobalKey<DashboardScreenState> _dashboardKey =
+      GlobalKey<DashboardScreenState>();
+  late List<Widget> _widgetOptions;
 
   static const List<String> _titles = <String>[
     'All Accounts',
@@ -30,13 +26,23 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     'Settings',
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _widgetOptions = <Widget>[
+      DashboardScreen(key: _dashboardKey), 
+      const ReportsScreen(),
+      const BudgetScreen(),
+      const SettingsScreen(),
+    ];
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
-  // Handles refreshing the app after adding a transaction
   void _navigateToAddTransaction() async {
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
@@ -45,12 +51,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       ),
     );
 
-    // If we get 'true' back, it means we saved a transaction
     if (result == true) {
-      // This forces a rebuild of all pages, refreshing their data
+      _dashboardKey.currentState?.refreshData();
       setState(() {
-        _widgetOptions = <Widget>[
-          const DashboardScreen(), 
+         _widgetOptions = <Widget>[
+          DashboardScreen(key: _dashboardKey), 
           const ReportsScreen(),   
           const BudgetScreen(),    
           const SettingsScreen(),  

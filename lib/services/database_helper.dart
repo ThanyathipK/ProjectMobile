@@ -90,7 +90,6 @@ class DatabaseHelper {
   }
 
   //ransaction Functions
-  
   Future<int> insertTransaction(Transaction tx) async {
     final db = await instance.database;
     return await db.insert('transactions', tx.toMap());
@@ -259,6 +258,20 @@ class DatabaseHelper {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  Future<List<Transaction>> getMonthlyTransactions() async {
+    final db = await instance.database;
+    final now = DateTime.now();
+    final firstDayOfMonth = DateTime(now.year, now.month, 1).toIso8601String();
+
+    final result = await db.rawQuery('''
+      SELECT * FROM transactions
+      WHERE date >= ?
+      ORDER BY date DESC
+    ''', [firstDayOfMonth]);
+    
+    return result.map((json) => Transaction.fromMap(json)).toList();
   }
 
   Future close() async {
