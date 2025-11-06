@@ -6,7 +6,6 @@ import 'package:se/models/transaction.dart';
 import 'package:sqflite/sqflite.dart' hide Transaction;
 
 class DatabaseHelper {
-  // Singleton pattern
   static final DatabaseHelper instance = DatabaseHelper._init();
   static Database? _database;
   DatabaseHelper._init();
@@ -20,19 +19,16 @@ class DatabaseHelper {
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
-    // Increment version to 2 for the new tables
     return await openDatabase(path, version: 2, onCreate: _createDB, onUpgrade: _onUpgradeDB);
   }
 
-  // This runs if the database already exists at version 1
+
   Future _onUpgradeDB(Database db, int oldVersion, int newVersion) async {
      if (oldVersion < 2) {
-       // Just call the function to create the new tables
        await _createAdvancedTables(db);
      }
   }
 
-  // This runs only when the database is created for the first time
   Future _createDB(Database db, int version) async {
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     const textType = 'TEXT NOT NULL';
@@ -60,15 +56,10 @@ class DatabaseHelper {
     )
     ''');
 
-    // Create the new tables as well
     await _createAdvancedTables(db);
-
-    // Insert default accounts
     await db.insert('accounts', {'name': 'Cash', 'initial_balance': 0});
     await db.insert('accounts', {'name': 'Bank', 'initial_balance': 0});
   }
-  
-  // Helper to create the new tables for budgets and recurring tx
   Future _createAdvancedTables(Database db) async {
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     const textType = 'TEXT NOT NULL';
@@ -98,7 +89,7 @@ class DatabaseHelper {
     ''');
   }
 
-  // --- Core Transaction Functions ---
+  //ransaction Functions
   
   Future<int> insertTransaction(Transaction tx) async {
     final db = await instance.database;
@@ -170,14 +161,14 @@ class DatabaseHelper {
     };
   }
 
-  // --- CSV Export Function ---
+  //CSV Export Function (Cannot real use due to permission)
   Future<List<Transaction>> getAllTransactions() async {
     final db = await instance.database;
     final result = await db.query('transactions', orderBy: 'date DESC');
     return result.map((json) => Transaction.fromMap(json)).toList();
   }
 
-  // --- Reports Page Function ---
+  //Reports Page Function
   Future<List<Map<String, dynamic>>> getCategorySpending({String period = 'monthly'}) async {
     final db = await instance.database;
     final now = DateTime.now();
@@ -207,7 +198,7 @@ class DatabaseHelper {
     return result;
   }
 
-  // --- Budget Functions ---
+  //Budget Functions
   Future<int> upsertBudget(Budget budget) async {
     final db = await instance.database;
     return await db.insert(
@@ -238,7 +229,7 @@ class DatabaseHelper {
     return result.map((json) => Budget.fromMap(json)).toList();
   }
   
-  // --- Recurring Transaction Functions ---
+  //Recurring Transaction Functions
   Future<int> addRecurringTransaction(RecurringTransaction tx) async {
     final db = await instance.database;
     return await db.insert('recurring_transactions', tx.toMap());

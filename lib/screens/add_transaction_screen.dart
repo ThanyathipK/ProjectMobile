@@ -111,7 +111,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     try {
       await DatabaseHelper.instance.insertTransaction(newTransaction);
       if (mounted) {
-        Navigator.of(context).pop(true); // Send 'true' back
+        Navigator.of(context).pop(true); 
       }
     } catch (e) {
       if (mounted) {

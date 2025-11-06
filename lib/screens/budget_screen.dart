@@ -80,7 +80,7 @@ class _BudgetScreenState extends State<BudgetScreen>
                 if (amount > 0) {
                   final newBudget = Budget(category: category, amount: amount);
                   await dbHelper.upsertBudget(newBudget);
-                  _loadBudgets(); // Refresh the list
+                  _loadBudgets(); 
                   Navigator.of(context).pop();
                 }
               },

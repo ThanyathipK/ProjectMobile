@@ -50,10 +50,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       // This forces a rebuild of all pages, refreshing their data
       setState(() {
         _widgetOptions = <Widget>[
-          const DashboardScreen(), // A new instance
-          const ReportsScreen(),   // A new instance
-          const BudgetScreen(),    // A new instance
-          const SettingsScreen(),  // A new instance
+          const DashboardScreen(), 
+          const ReportsScreen(),   
+          const BudgetScreen(),    
+          const SettingsScreen(),  
         ];
       });
     }

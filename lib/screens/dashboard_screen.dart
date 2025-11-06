@@ -77,7 +77,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   return AccountCard(
                     accountName: account.name,
                     balance: formatter.format(account.balance),
-                    // Change is not calculated, so we pass an empty string
                     change: "", 
                     changeColor: account.balance >= 0 
                                   ? AppTheme.primaryGreen 
@@ -86,7 +85,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => AccountDetailScreen(
-                            account: account, // Pass the whole account object
+                            account: account, 
                           ),
                         ),
                       );

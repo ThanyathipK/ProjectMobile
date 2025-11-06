@@ -38,9 +38,9 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
 
   Future<List<tx_model.Transaction>> _loadTransactions() async {
     if (widget.account.id == null) {
-      return <tx_model.Transaction>[]; // Return empty list
+      return <tx_model.Transaction>[]; 
     }
-    // TODO: Filter this by tab (Daily, Weekly, etc.)
+
     return dbHelper.getTransactionsForAccount(widget.account.id!);
   }
 
@@ -70,7 +70,6 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          // All tabs just show the same "monthly" data for this example
           _buildTransactionView(context, "Monthly"),
           _buildTransactionView(context, "Weekly"),
           _buildTransactionView(context, "Monthly"),
@@ -84,7 +83,6 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
     return ListView(
       padding: const EdgeInsets.all(16.0),
       children: [
-        // Balance Summary Card (using FutureBuilder)
         FutureBuilder<Map<String, dynamic>>(
           future: _accountData,
           builder: (context, snapshot) {
@@ -111,8 +109,7 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
           style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 12),
-        
-        // Transaction List (using another FutureBuilder)
+    
         FutureBuilder<List<tx_model.Transaction>>(
           future: _transactions,
           builder: (context, snapshot) {

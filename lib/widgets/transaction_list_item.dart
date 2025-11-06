@@ -42,7 +42,7 @@ class TransactionListItem extends StatelessWidget {
           ),
         ),
         onTap: () {
-          // TODO: Navigate to Edit Transaction Screen
+          
         },
       ),
     );

@@ -1,7 +1,7 @@
 class Transaction {
   final int? id;
   final int accountId;
-  final String type; // 'expense' or 'income'
+  final String type; // expense or income
   final String category;
   final double amount;
   final DateTime date;

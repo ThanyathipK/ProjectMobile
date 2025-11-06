@@ -1,7 +1,7 @@
 class Account {
   final int? id;
   final String name;
-  final double balance; // This is a *calculated* balance
+  final double balance; // For calculate balance
 
   Account({this.id, required this.name, required this.balance});
 

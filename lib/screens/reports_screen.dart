@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:se/services/database_helper.dart';
 import 'package:se/theme.dart';
 
-// Helper class for chart data
 class CategorySpending {
   final String category;
   final double total;
@@ -38,7 +37,7 @@ class _ReportsScreenState extends State<ReportsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this, initialIndex: 2); // Default to Monthly
+    _tabController = TabController(length: 4, vsync: this, initialIndex: 2); 
     _tabController.addListener(_onTabChanged);
     _loadData();
   }

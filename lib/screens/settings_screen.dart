@@ -10,9 +10,8 @@ import 'package:se/theme.dart';
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
-  // --- NEW (Simplified) CSV Export Function ---
   Future<void> _exportDataToCSV(BuildContext context) async {
-    // 1. Check permissions (still good practice)
+    //Check permissions (Stuck here TT) 
     var status = await Permission.storage.request();
     if (!status.isGranted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -21,7 +20,7 @@ class SettingsScreen extends StatelessWidget {
       return;
     }
 
-    // 2. Get data from database
+    //Get data from database
     final dbHelper = DatabaseHelper.instance;
     final accounts = await dbHelper.getAccountsWithBalance();
     final transactions = await dbHelper.getAllTransactions();
@@ -33,7 +32,7 @@ class SettingsScreen extends StatelessWidget {
       return;
     }
 
-    // 3. Format data to CSV
+    //Format data to CSV
     final accountMap = {for (var acc in accounts) acc.id: acc.name};
     List<List<dynamic>> rows = [];
     rows.add(["ID", "Date", "Account Name", "Type", "Category", "Amount", "Notes"]);
@@ -49,15 +48,11 @@ class SettingsScreen extends StatelessWidget {
       ]);
     }
     String csv = const ListToCsvConverter().convert(rows);
-
-    // 4. Get path and save file (THE NEW, SIMPLER WAY)
     try {
-      // This gets the app's own external folder, which is safe to write to.
       Directory? directory;
       if (Platform.isAndroid) {
          directory = await getExternalStorageDirectory();
       } else {
-        // iOS
          directory = await getApplicationDocumentsDirectory();
       }
 
@@ -75,7 +70,7 @@ class SettingsScreen extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Data exported successfully! Path: ${file.path}"),
-          duration: const Duration(seconds: 5), // Show for longer
+          duration: const Duration(seconds: 5), 
           action: SnackBarAction(label: "OK", onPressed: () {}),
         ),
       );
@@ -96,7 +91,6 @@ class SettingsScreen extends StatelessWidget {
           title: "Recurring Transactions",
           icon: Icons.autorenew,
           onTap: () {
-            // NEW: Navigate to new screen
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const RecurringTransactionsScreen(),
@@ -109,7 +103,6 @@ class SettingsScreen extends StatelessWidget {
           title: "Export Data (CSV)",
           icon: Icons.file_download_outlined,
           onTap: () {
-            // NEW: Call export function
             _exportDataToCSV(context);
           },
         ),
@@ -160,7 +153,4 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  // Note: All the complex native channel functions 
-  // (getExternalStoragePublicDirectory, _getAndroidDownloadsDirectory)
-  // have been removed.
 }

@@ -31,7 +31,7 @@ class AppTheme {
       bodyMedium: TextStyle(color: lightText, fontSize: 14),
     ),
 
-    cardTheme: CardThemeData( // <-- Fixed: CardThemeData
+    cardTheme: CardThemeData( 
       color: cardBackground,
       elevation: 1,
       shadowColor: Colors.black12,

@@ -46,7 +46,6 @@ class _RecurringTransactionsScreenState
               children: [
                 TextField(controller: notesController, decoration: const InputDecoration(labelText: 'Notes (e.g., Netflix)')),
                 TextField(controller: amountController, decoration: const InputDecoration(labelText: 'Amount', prefixText: '\$'), keyboardType: TextInputType.number),
-                // TODO: Add Category, Account, and Frequency dropdowns
                 Text("Category: $category (Hardcoded)"),
                 Text("Frequency: $frequency (Hardcoded)"),
               ],
@@ -60,18 +59,18 @@ class _RecurringTransactionsScreenState
                 if (amount == 0) return;
 
                 final newTx = RecurringTransaction(
-                  accountId: 1, // Hardcoded to 'Cash' (ID 1)
+                  accountId: 1, 
                   type: 'expense',
                   category: category,
                   amount: amount,
                   notes: notesController.text,
                   frequency: frequency,
-                  // Set first due date for next month
+                  
                   nextDate: DateTime(DateTime.now().year, DateTime.now().month + 1, DateTime.now().day), 
                 );
                 
                 await dbHelper.addRecurringTransaction(newTx);
-                _loadData(); // Refresh the list
+                _loadData(); 
                 Navigator.of(context).pop();
               },
               child: const Text("Save"),
