@@ -7,20 +7,17 @@ import 'package:se/theme.dart';
 import 'package:se/widgets/transaction_list_item.dart';
 
 class DashboardScreen extends StatefulWidget {
-  // We must pass the key from the parent
   const DashboardScreen({Key? key}) : super(key: key);
 
   @override
-  // 1. RENAME THIS from _DashboardScreenState to DashboardScreenState
   State<DashboardScreen> createState() => DashboardScreenState();
 }
 
-// 2. RENAME THE CLASS to be public
 class DashboardScreenState extends State<DashboardScreen> {
   late Future<Map<String, dynamic>> _dashboardData;
   final dbHelper = DatabaseHelper.instance;
   final formatter = NumberFormat("#,##0.00", "en_US");
-
+ 
   @override
   void initState() {
     super.initState();
@@ -37,8 +34,6 @@ class DashboardScreenState extends State<DashboardScreen> {
     };
   }
   
-  // 3. ADD THIS PUBLIC METHOD
-  // This is the "remote control" function
   void refreshData() {
     setState(() {
       _dashboardData = _loadData();
