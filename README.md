@@ -87,4 +87,3 @@ lib/
 - Wire up the CSV export helper with the `permission_handler` flow on Android/iOS.
 - Add integration tests that validate recurring transaction processing and budget warnings.
 
-Feel free to open issues or pull requests for enhancements, localization, or platform-specific polish.
